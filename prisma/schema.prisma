@@ -1,0 +1,241 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model roles {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String      @unique @db.VarChar(50)
+  created_at  DateTime    @default(now())
+  created_by  String?     @db.Uuid
+  updated_at  DateTime    @default(now())
+  updated_by  String?     @db.Uuid
+
+  user_roles  user_roles[]
+}
+
+model users {
+  id             String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String              @db.VarChar(100)
+  email          String              @unique @db.VarChar(100)
+  password       String              @db.VarChar(255)
+  status         String              @default("ACTIVE") @db.VarChar(20)
+  created_at     DateTime            @default(now())
+  created_by     String?             @db.Uuid
+  updated_at     DateTime            @default(now())
+  updated_by     String?             @db.Uuid
+
+  user_roles     user_roles[]
+  transactions   user_transactions[]
+  buckets        buckets[]
+}
+
+model user_roles {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String   @db.Uuid
+  role_id     String   @db.Uuid
+  created_at  DateTime @default(now())
+  created_by  String?  @db.Uuid
+  updated_at  DateTime @default(now())
+  updated_by  String?  @db.Uuid
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  role roles @relation(fields: [role_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, role_id])
+}
+
+model schools {
+  id             String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String               @db.VarChar(150)
+	logo					 String								@db.VarChar(500)
+	slogan 				 String								@db.VarChar(500)
+  background     String?              @db.VarChar(500)
+  color          String?              @db.VarChar(50)
+  status         String?              @db.VarChar(20)
+  created_at     DateTime             @default(now())
+  created_by     String?              @db.Uuid
+  updated_at     DateTime             @default(now())
+  updated_by     String?              @db.Uuid
+
+  transactions   user_transactions[]
+  teachers       teachers[]
+  classes        classes[]
+  students       students[]
+  news           news_schools[]
+  activities     activity_schools[]
+  contact_links  contact_schools[]
+	messages			 messages[]
+}
+
+model user_transactions {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String   @db.Uuid
+  school_id   String   @db.Uuid
+  start_date  DateTime @db.Date
+  end_date    DateTime? @db.Date
+  created_at  DateTime @default(now())
+  created_by  String?  @db.Uuid
+  updated_at  DateTime @default(now())
+  updated_by  String?  @db.Uuid
+
+  user   users   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  school schools @relation(fields: [school_id], references: [id], onDelete: Cascade)
+}
+
+model teacher_types {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String        @unique @db.VarChar(100)
+  created_at  DateTime      @default(now())
+  created_by  String?       @db.Uuid
+  updated_at  DateTime      @default(now())
+  updated_by  String?       @db.Uuid
+
+  teachers    teachers[]
+}
+
+model teachers {
+  id               String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String        @db.VarChar(100)
+  school_id        String?       @db.Uuid
+  teacher_type_id  String?       @db.Uuid
+  created_at       DateTime      @default(now())
+  created_by       String?       @db.Uuid
+  updated_at       DateTime      @default(now())
+  updated_by       String?       @db.Uuid
+
+  school       schools?       @relation(fields: [school_id], references: [id], onDelete: Cascade)
+  teacher_type teacher_types? @relation(fields: [teacher_type_id], references: [id], onDelete: SetNull)
+  vice_classes student_classes[] @relation("ViceTeacher")
+}
+
+model classes {
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  class          String           @db.VarChar(50)
+  school_id      String?          @db.Uuid
+  created_at     DateTime         @default(now())
+  created_by     String?          @db.Uuid
+  updated_at     DateTime         @default(now())
+  updated_by     String?          @db.Uuid
+
+  school         schools?         @relation(fields: [school_id], references: [id], onDelete: Cascade)
+  student_classes student_classes[]
+}
+
+model students {
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String           @db.VarChar(100)
+  school_id      String?          @db.Uuid
+  created_at     DateTime         @default(now())
+  created_by     String?          @db.Uuid
+  updated_at     DateTime         @default(now())
+  updated_by     String?          @db.Uuid
+
+  school          schools?         @relation(fields: [school_id], references: [id], onDelete: Cascade)
+  student_classes student_classes[]
+}
+
+model student_classes {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  student_id       String   @db.Uuid
+  class_id         String   @db.Uuid
+  vice_teacher_id  String?  @db.Uuid
+  start_date       DateTime @db.Date
+  end_date         DateTime? @db.Date
+  created_at       DateTime @default(now())
+  created_by       String?  @db.Uuid
+  updated_at       DateTime @default(now())
+  updated_by       String?  @db.Uuid
+
+  student      students @relation(fields: [student_id], references: [id], onDelete: Cascade)
+  class        classes  @relation(fields: [class_id], references: [id], onDelete: Cascade)
+  vice_teacher teachers? @relation("ViceTeacher", fields: [vice_teacher_id], references: [id], onDelete: SetNull)
+
+  @@unique([student_id, class_id, start_date])
+}
+
+model news_schools {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id   String   @db.Uuid
+  title       String   @db.VarChar(200)
+  content     String   @db.Text
+  created_at  DateTime @default(now())
+  created_by  String?  @db.Uuid
+  updated_at  DateTime @default(now())
+  updated_by  String?  @db.Uuid
+
+  school schools @relation(fields: [school_id], references: [id], onDelete: Cascade)
+}
+
+model activity_schools {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id   String   @db.Uuid
+  title       String   @db.VarChar(200)
+  content     String?  @db.Text
+  start_date  DateTime @db.Date
+  end_date    DateTime? @db.Date
+  created_at  DateTime @default(now())
+  created_by  String?  @db.Uuid
+  updated_at  DateTime @default(now())
+  updated_by  String?  @db.Uuid
+
+  school schools @relation(fields: [school_id], references: [id], onDelete: Cascade)
+}
+
+model contacts {
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String          @unique @db.VarChar(100)
+  created_at  DateTime        @default(now())
+  created_by  String?         @db.Uuid
+  updated_at  DateTime        @default(now())
+  updated_by  String?         @db.Uuid
+
+  school_links contact_schools[]
+}
+
+model contact_schools {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id   String   @db.Uuid
+  contact_id  String   @db.Uuid
+  value       String   @db.VarChar(255)
+  created_at  DateTime @default(now())
+  created_by  String?  @db.Uuid
+  updated_at  DateTime @default(now())
+  updated_by  String?  @db.Uuid
+
+  school  schools  @relation(fields: [school_id], references: [id], onDelete: Cascade)
+  contact contacts @relation(fields: [contact_id], references: [id], onDelete: Cascade)
+
+  @@unique([school_id, contact_id])
+}
+
+model buckets {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String   @db.Uuid
+  name        String   @db.VarChar(255)
+  url         String   @db.Text
+  created_at  DateTime @default(now())
+  created_by  String?  @db.Uuid
+  updated_at  DateTime @default(now())
+  updated_by  String?  @db.Uuid
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model messages {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id    String		@db.Uuid
+  name				 String
+  email				 String
+  message      String
+  created_at   DateTime @default(now())
+  created_by   String?
+  updated_at   DateTime @updatedAt
+  updated_by   String?
+
+  school schools @relation(fields: [school_id], references: [id])
+}
