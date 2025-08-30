@@ -12,13 +12,16 @@ export default function Header(props: { id?: string; name?: string }) {
             <span className="text-xl font-semibold">{props.name}</span>
           </Link>
 
-          <nav className="hidden md:flex space-x-10">
-            <Button.link href="#career">Beranda</Button.link>
-            <Button.link href="#about">Tentang Kami</Button.link>
-            <Button.link href="#activity">Kegiatan</Button.link>
-            <Button.link href="#news">Berita</Button.link>
-            <Button.link href="#contact">Kontak</Button.link>
-          </nav>
+          <div className="relative">
+            <input type="checkbox" className="hidden" />
+            <nav className="absolute md:static top md:flex space-x-10">
+              <Button.link href="#career">Beranda</Button.link>
+              <Button.link href="#about">Tentang Kami</Button.link>
+              <Button.link href="#activity">Kegiatan</Button.link>
+              <Button.link href="#news">Berita</Button.link>
+              <Button.link href="#contact">Kontak</Button.link>
+            </nav>
+          </div>
         </div>
       </div>
     </header>

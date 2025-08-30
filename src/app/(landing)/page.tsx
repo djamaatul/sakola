@@ -66,7 +66,7 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="mt-16 flex lg:grid-cols-3 gap-8">
+          <div className="mt-16 flex flex-wrap gap-8">
             <MiniCard
               title="Desain Responsive"
               description="Website lo tetap cakep di semua device — dari PC, tablet, sampe HP."

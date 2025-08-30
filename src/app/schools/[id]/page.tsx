@@ -26,7 +26,7 @@ export default async function SchoolPage(
         style={{
           backgroundColor: school?.color ?? "var(--primary)",
         }}
-        className="flex gap-4 relative justify-between"
+        className="flex gap-4 relative justify-between flex-col md:flex-row"
       >
         <div className="p-8 flex flex-col gap-4">
           <div className="text-2xl font-bold">
@@ -48,7 +48,7 @@ export default async function SchoolPage(
         <h3 id="#activity" className="font-semibold text-xl">
           Kegiatan
         </h3>
-        <div className="flex gap-4 overflow-scroll flex-wrap">
+        <div className="flex flex-col md:flex-row gap-4 overflow-scroll flex-wrap">
           {school?.activities?.map((activity) => {
             return (
               <MiniCard
@@ -63,7 +63,7 @@ export default async function SchoolPage(
         <h3 id="#news" className="font-semibold text-xl">
           Berita
         </h3>
-        <div className="flex gap-4 overflow-scroll flex-wrap">
+        <div className="flex flex-col md:flex-row gap-4 overflow-scroll flex-wrap">
           {school?.news?.map((news) => {
             return (
               <Card
