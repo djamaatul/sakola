@@ -12,9 +12,14 @@ export default function Header(props: { id?: string; name?: string }) {
             <span className="text-xl font-semibold">{props.name}</span>
           </Link>
 
-          <div className="relative">
-            <input type="checkbox" className="hidden" />
-            <nav className="absolute md:static top md:flex space-x-10">
+          <div className="relative w-6 h-6 flex justify-center items-center md:w-auto md:h-auto">
+            <input
+              type="checkbox"
+              className="peer opacity-0 w-full h-full absolute top-0 left-0 z-10 md:hidden"
+            />
+            <div className="absolute top-0 left-0 w-6 h-1 bg-white peer-checked:rotate-45 peer-checked:top-2 peer-checked:right-2 transition-all duration-300 md:hidden"></div>
+            <div className="absolute top-3 left-0 w-6 h-1 bg-white peer-checked:-rotate-45 peer-checked:top-2 peer-checked:-right-2 transition-all duration-300 md:hidden"></div>
+            <nav className="scale-0 peer-checked:scale-100 origin-top-right absolute md:static md:scale-100 top-10 right-0 md:flex bg-foreground md:bg-transparent text-background md:text-foreground rounded-lg transition-all duration-300">
               <Button.link href="#career">Beranda</Button.link>
               <Button.link href="#about">Tentang Kami</Button.link>
               <Button.link href="#activity">Kegiatan</Button.link>
