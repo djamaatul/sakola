@@ -77,8 +77,8 @@ export default async function SchoolPage(
         </div>
       </div>
 
-      <div className="flex gap-4 p-8">
-        <div className="flex flex-col gap-2">
+      <div className="flex gap-4 p-8 justify-around">
+        <div className="flex flex-col gap-4">
           {school?.contact_links.map((contact) => {
             return (
               <div key={contact.id}>
@@ -88,7 +88,13 @@ export default async function SchoolPage(
             );
           })}
         </div>
-        <MessageForm />
+        <MessageForm
+          to={
+            school?.contact_links.find(
+              (f) => objectContact[f.contact_id] === "Email"
+            )?.value ?? ""
+          }
+        />
       </div>
     </section>
   );
